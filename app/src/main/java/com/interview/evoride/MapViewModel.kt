@@ -46,6 +46,7 @@ class MapViewModel : ViewModel() {
             map.addMarker(MarkerOptions().position(loc).title("Start"))
             if (route.isNotEmpty()) {
                 val pre = route[route.size - 1]
+                if (pre.equals(loc)) return@setOnMyLocationChangeListener
                 map.addPolyline(PolylineOptions().clickable(true).add(pre, loc))
                 totalDistance += SphericalUtil.computeDistanceBetween(pre, loc)
                 // reach the destination
