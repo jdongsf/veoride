@@ -1,11 +1,15 @@
 # veoride
 
-1. click start button, you will be direct to your current location.
-   I generate two destinations on the north, on the east, which is 500 meters away.
-2. click one of destionations, the other will disappear.
-   then you can start moving, it will generate path on the map.
-   Upon reaching the destination,  you will be able to see traveled path, elapsed trip time, total distance traveled.
-3. thoughts: 
+1. Enable Location service for the app
+2. click on the map, choose your destionation, then click start button
+3. move your position toward the destionation.
+   when you are in 20 meters radius, it will show the dialog info.
+   a. Their traveled path
+   b. The elapsed trip time
+   c. The total distance traveled
+   If you are using emulator like me,  you can just set gps location for your emulator.
+   It will draw the path for you dynanmically.
+4. thoughts: 
     create map view, add start button, final dialog as overlay.
     Click start button, set startTime as 0, start updating location in OnMyLocationChangeListener().
     Once we received changes, we will add Polyline to draw path.

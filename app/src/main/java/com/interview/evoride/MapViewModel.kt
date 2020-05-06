@@ -14,58 +14,69 @@ import com.google.maps.android.SphericalUtil
 class MapViewModel : ViewModel() {
 
     private var startTime: Long = 0
-    private var dst: LatLng? = null
     private var totalDistance: Double = 0.0
 
-    // set 2 destination markers as demo purpose, click one marker, the other disappeared
-    private lateinit var marker1: Marker
-    private lateinit var marker2: Marker
+    private var dst: LatLng? = null
+    private var startMarker: Marker? = null
+    private var endMarker: Marker? = null
     private val route = mutableListOf<LatLng>()
 
-    lateinit var map: GoogleMap
-    val arrived = MutableLiveData<Boolean>()
+    internal lateinit var map: GoogleMap
+    internal val arrived = MutableLiveData<Boolean>()
 
     fun initMap(googleMap: GoogleMap) {
         map = googleMap
-        map.isMyLocationEnabled = true
-
-        map.setOnMarkerClickListener { marker ->
-            if (marker1.equals(marker)) {
-                marker2.remove()
-                dst = LatLng(marker1.position.latitude, marker1.position.longitude)
-            } else if (marker2.equals(marker)) {
-                marker1.remove()
-                dst = LatLng(marker2.position.latitude, marker2.position.longitude)
-            }
-            false
+        try {
+            init()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
+    }
 
+    fun init() {
+        map.isMyLocationEnabled = true
+        map.setOnMapClickListener(object : GoogleMap.OnMapClickListener {
+            override fun onMapClick(p0: LatLng?) {
+                if (startTime != 0L) return
+                dst = p0
+                endMarker?.remove()
+                endMarker = map.addMarker(MarkerOptions().position(dst!!).title("End"))
+            }
+        })
         map.setOnMyLocationChangeListener { arg ->
-            if (startTime == 0L) return@setOnMyLocationChangeListener
             val loc = LatLng(arg.latitude, arg.longitude)
-            map.addMarker(MarkerOptions().position(loc).title("Start"))
-            if (route.isNotEmpty()) {
+            if (route.isNotEmpty() && startTime != 0L) {
                 val pre = route[route.size - 1]
-                if (pre.equals(loc)) return@setOnMyLocationChangeListener
+                if (pre == loc) return@setOnMyLocationChangeListener
                 map.addPolyline(PolylineOptions().clickable(true).add(pre, loc))
                 totalDistance += SphericalUtil.computeDistanceBetween(pre, loc)
                 // reach the destination
-                if (dst != null && SphericalUtil.computeDistanceBetween(pre, dst) < RADIUS) {
+                if (dst != null)
+                    println("distance is :" + SphericalUtil.computeDistanceBetween(loc, dst))
+                if (dst != null && SphericalUtil.computeDistanceBetween(
+                        loc,
+                        dst
+                    ) < RADIUS && arrived.value != true
+                ) {
                     arrived.value = true
                 }
             } else {
-                val dest1 = SphericalUtil.computeOffset(loc, 500.0, 0.0)
-                marker1 = map.addMarker(MarkerOptions().position(dest1).title("End1"))
-                val dest2 = SphericalUtil.computeOffset(loc, 500.0, 90.0)
-                marker2 = map.addMarker(MarkerOptions().position(dest2).title("End2"))
+                if (startMarker == null)
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, ZOOM))
+                else
+                    startMarker!!.remove()
+                startMarker = map.addMarker(MarkerOptions().position(loc).title("Start"))
             }
-            route.add(loc)
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15.0f))
+
+            if (startTime == 0L && route.isNotEmpty()) route[0] = loc
+            else route.add(loc)
         }
     }
 
     fun travel() {
         startTime = System.currentTimeMillis()
+        if (!map.isMyLocationEnabled)
+            init()
     }
 
     fun totalDistance(): String {
@@ -81,7 +92,8 @@ class MapViewModel : ViewModel() {
     }
 
     companion object {
-        private const val RADIUS: Double = 5.0
+        private const val ZOOM = 15.0f
+        private const val RADIUS = 50.0
     }
 
 }

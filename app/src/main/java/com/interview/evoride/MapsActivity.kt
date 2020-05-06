@@ -24,7 +24,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(R.layout.activity_maps)
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-
         mapFragment.getMapAsync(this)
 
         start.setOnClickListener {
@@ -46,21 +45,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun requestPermissionIfNeeded() {
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                0
-            )
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 0)
         }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED))
+            viewModel.init()
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         viewModel.initMap(googleMap)
     }
-
 }
