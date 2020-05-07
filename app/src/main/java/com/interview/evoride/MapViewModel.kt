@@ -56,7 +56,8 @@ class MapViewModel : ViewModel() {
 //                if (dst != null)
 //                    println("distance is :" + SphericalUtil.computeDistanceBetween(loc, dst))
                 if (isArrived(loc)) {
-                    arrived.value = LatLngBounds(LatLng(minLat!!, minLng!!), LatLng(maxLat!!, maxLng!!))
+                    arrived.value =
+                        LatLngBounds(LatLng(minLat!!, minLng!!), LatLng(maxLat!!, maxLng!!))
                 }
             } else {
                 if (startMarker == null)
@@ -69,10 +70,10 @@ class MapViewModel : ViewModel() {
             if (route.isNotEmpty() && !isStarted()) route[0] = loc
             else route.add(loc)
 
-            minLat = if(minLat == null) loc.latitude else  Math.min(minLat!!, loc.latitude)
-            maxLat = if (maxLat == null) loc.latitude else  Math.max(maxLat!!, loc.latitude)
-            minLng = if (minLng == null) loc.longitude else  Math.max(minLng!!, loc.longitude)
-            maxLng = if (maxLng == null) loc.longitude else  Math.max(maxLng!!, loc.longitude)
+            minLat = if (minLat == null) loc.latitude else Math.min(minLat!!, loc.latitude)
+            maxLat = if (maxLat == null) loc.latitude else Math.max(maxLat!!, loc.latitude)
+            minLng = if (minLng == null) loc.longitude else Math.max(minLng!!, loc.longitude)
+            maxLng = if (maxLng == null) loc.longitude else Math.max(maxLng!!, loc.longitude)
         }
     }
 

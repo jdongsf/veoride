@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -41,6 +42,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         viewModel.arrived.observe(this, Observer {
             viewModel.map.setLatLngBoundsForCameraTarget(it)
+            viewModel.map.moveCamera(CameraUpdateFactory.newLatLngZoom(it.getCenter(), 5.0f))
             viewModel.map.snapshot { bitmap -> thumbnail.setImageBitmap(bitmap) }
             timeSummary.text = viewModel.totalTime()
             distanceSummary.text = viewModel.totalDistance()
@@ -53,16 +55,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun requestPermissionIfNeeded() {
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                0
-            )
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 0)
         }
     }
 
