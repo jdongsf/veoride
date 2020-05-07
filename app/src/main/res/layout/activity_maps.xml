@@ -11,7 +11,7 @@
 
     <LinearLayout
         android:id="@+id/summaryContainer"
-        android:layout_width="300dp"
+        android:layout_width="360dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center_horizontal"
@@ -26,12 +26,14 @@
         <TextView
             android:id="@+id/timeSummary"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" />
 
         <TextView
             android:id="@+id/distanceSummary"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" />
     </LinearLayout>
 
     <Button
