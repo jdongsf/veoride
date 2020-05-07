@@ -7,14 +7,11 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
 import com.google.maps.android.SphericalUtil
 
+
 @Suppress("DEPRECATION")
 class MapViewModel : ViewModel() {
 
     private var startTime: Long = 0
-    private var minLat: Double? = null
-    private var maxLat: Double? = null
-    private var minLng: Double? = null
-    private var maxLng: Double? = null
     private var totalDistance: Double = 0.0
 
     private var dst: LatLng? = null
@@ -52,12 +49,9 @@ class MapViewModel : ViewModel() {
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, ZOOM))
                 map.addPolyline(PolylineOptions().clickable(true).add(pre, loc))
                 totalDistance += SphericalUtil.computeDistanceBetween(pre, loc)
-                // reach the destination
-//                if (dst != null)
-//                    println("distance is :" + SphericalUtil.computeDistanceBetween(loc, dst))
                 if (isArrived(loc)) {
                     arrived.value =
-                        LatLngBounds(LatLng(minLat!!, minLng!!), LatLng(maxLat!!, maxLng!!))
+                        LatLngBounds.builder().include(startMarker!!.position).include(dst).build()
                 }
             } else {
                 if (startMarker == null)
@@ -69,11 +63,6 @@ class MapViewModel : ViewModel() {
 
             if (route.isNotEmpty() && !isStarted()) route[0] = loc
             else route.add(loc)
-
-            minLat = if (minLat == null) loc.latitude else Math.min(minLat!!, loc.latitude)
-            maxLat = if (maxLat == null) loc.latitude else Math.max(maxLat!!, loc.latitude)
-            minLng = if (minLng == null) loc.longitude else Math.max(minLng!!, loc.longitude)
-            maxLng = if (maxLng == null) loc.longitude else Math.max(maxLng!!, loc.longitude)
         }
     }
 
@@ -89,6 +78,11 @@ class MapViewModel : ViewModel() {
 
     fun travel() {
         startTime = System.currentTimeMillis()
+        map.animateCamera(
+            CameraUpdateFactory.newLatLngZoom(
+                LatLng(startMarker!!.position.latitude, startMarker!!.position.longitude), ZOOM
+            )
+        )
     }
 
     fun totalDistance(): String {
@@ -100,7 +94,7 @@ class MapViewModel : ViewModel() {
         val s: Long = seconds % 60
         val m: Long = seconds / 60 % 60
         val h: Long = seconds / (60 * 60) % 24
-        return String.format("Total time is %d:%02d:%02d", h, m, s)
+        return String.format("Total elapsed trip time is %d:%02d:%02d", h, m, s)
     }
 
     fun isDstChoosed(): Boolean {

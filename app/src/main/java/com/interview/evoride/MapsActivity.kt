@@ -18,6 +18,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import kotlinx.android.synthetic.main.activity_maps.*
 
+
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private val viewModel: MapViewModel by viewModels()
@@ -35,14 +36,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 viewModel.travel()
             } else {
                 Toast
-                    .makeText(this, "Choose destination at first", Toast.LENGTH_SHORT)
+                    .makeText(this, "Click to choose a destination ", Toast.LENGTH_SHORT)
                     .show()
             }
         }
 
         viewModel.arrived.observe(this, Observer {
-            viewModel.map.setLatLngBoundsForCameraTarget(it)
-            viewModel.map.moveCamera(CameraUpdateFactory.newLatLngZoom(it.getCenter(), 5.0f))
+            viewModel.map.moveCamera(CameraUpdateFactory.newLatLngBounds(it, 0))
             viewModel.map.snapshot { bitmap -> thumbnail.setImageBitmap(bitmap) }
             timeSummary.text = viewModel.totalTime()
             distanceSummary.text = viewModel.totalDistance()
