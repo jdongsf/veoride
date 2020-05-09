@@ -3,7 +3,7 @@
 1. Enable Location service for the app
 2. click on the map, choose your destionation, then click start button
 3. move your position toward the destionation.
-   when you are in 20 meters radius, it will show the dialog info.
+   when you are in 50 meters radius, it will show the dialog info.
    a. Their traveled path
    b. The elapsed trip time
    c. The total distance traveled
